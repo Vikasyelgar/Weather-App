@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather APP</title>
+    <style>
+        /* Basic styling for the weather app */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin: 20px auto;
+            display: inline-block;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #weatherInfo {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            width: 50%;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to My Weather Web App!!!</h1>
+    <form id="weatherForm">
+        <input type="text" id="city" name="city" placeholder="Enter city name" required />
+        <button type="submit">Submit</button>
+    </form>
+    <div id="weatherInfo"></div>
+
+    <script>
+        document.getElementById('weatherForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const city = document.getElementById('city').value;
+            fetch('MyServlet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'city': city
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const weatherInfo = document.getElementById('weatherInfo');
+                let html = `<h2>Weather in ${data.name}</h2>`;
+                html += `<p>Temperature: ${(data.main.temp - 273.15).toFixed(1)}°C</p>`;
+                html += `<p>Weather: ${data.weather[0].description}</p>`;
+                html += `<p>Humidity: ${data.main.humidity}%</p>`;
+                html += `<p>Wind Speed: ${data.wind.speed} m/s</p>`;
+                weatherInfo.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('weatherInfo').innerHTML = 'Error: Unable to fetch weather data. Please try again.';
+            });
+        });
+    </script>
+</body>
+</html>
